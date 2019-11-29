@@ -6,6 +6,8 @@ const bodyParse = require('body-parser')
 const mongoose = require('mongoose')
 const Url = require('./models/url')
 const generateRandomNumber = require('./random')
+const { validationResult } = require('express-validator')
+const { urlValidator } = require('./urlValidator')
 
 const port = 3000
 
@@ -34,25 +36,37 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
-app.post('/', (req, res) => {
+app.post('/', urlValidator, (req, res) => {
   console.log(req.body.link)
   const link = req.body.link
-  Url.findOne({ link }).then((site) => {
-    if (site) {
-      res.render('index', { site })
-    } else {
-      let randomNumber = generateRandomNumber()
-      const newUrl = new Url({
-        link: link,
-        url: randomNumber
-      })
-      newUrl.save().then((site) => {
-        res.render('index', { site })
-      }).catch(err => {
-        console.log(err)
-      })
+  const errors = validationResult(req)
+  let errMsg = ''
+  if (!errors.isEmpty()) {
+    for (let errValidation of errors.errors) {
+      errMsg += errValidation.msg
+      console.log(errMsg)
     }
-  })
+    if (errMsg) {
+      return res.render('index', { errMsg })
+    }
+  } else {
+    Url.findOne({ link }).then((site) => {
+      if (site) {
+        res.render('index', { site })
+      } else {
+        let randomNumber = generateRandomNumber()
+        const newUrl = new Url({
+          link: link,
+          url: randomNumber
+        })
+        newUrl.save().then((site) => {
+          res.render('index', { site })
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    })
+  }
 })
 
 app.listen(port, () => {
