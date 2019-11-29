@@ -4,11 +4,13 @@ const app = express()
 const exphbs = require('express-handlebars')
 const bodyParse = require('body-parser')
 const mongoose = require('mongoose')
+const Url = require('./models/url')
+const generateRandomNumber = require('./random')
 
 const port = 3000
 
 // 連線mongodb
-mongoose.connect('mongodb://127.0.0.1/shortURL', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://127.0.0.1/shortURL', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 
 const db = mongoose.connection
 
@@ -20,6 +22,8 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
+
+
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
@@ -28,6 +32,27 @@ app.use(bodyParse.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
   res.render('index')
+})
+
+app.post('/', (req, res) => {
+  console.log(req.body.link)
+  const link = req.body.link
+  Url.findOne({ link }).then((site) => {
+    if (site) {
+      res.render('index', { site })
+    } else {
+      let randomNumber = generateRandomNumber()
+      const newUrl = new Url({
+        link: link,
+        url: randomNumber
+      })
+      newUrl.save().then((site) => {
+        res.render('index', { site })
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+  })
 })
 
 app.listen(port, () => {
