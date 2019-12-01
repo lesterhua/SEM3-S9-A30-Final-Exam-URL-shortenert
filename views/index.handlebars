@@ -7,7 +7,7 @@
       <form action="/" method="POST">
         <div class="form-group">
           <label for="link">請輸入網址</label>
-          <input type="text" class="form-control" id="link" name="link" value="{{site.link}}"
+          <input type="url" class="form-control" id="link" name="link" value="{{site.link}}"
             placeholder="input URL here">
           <button type="submit" class="btn btn-outline-primary btn-block mt-3">Shorten</button>
         </div>
@@ -31,8 +31,15 @@
         <div class="col-md-3">
           <p class="lead">縮網址是:</p>
         </div>
-        <div class="col-md-9">
-          <h3 class="text-danger">localhost:3000/{{site.url}}</h3>
+        <div class="col-md-6">
+          <!-- Target -->
+          <input id="shortUrl" class="form-control text-danger" value="localhost:3000/{{site.url}}">
+        </div>
+        <!-- Trigger -->
+        <div class="col-md-3">
+          <button class="btn text-success" id="copy" data-clipboard-target="#shortUrl">
+            <i class="fas fa-copy"></i> COPY
+          </button>
         </div>
       </div>
       {{/if}}

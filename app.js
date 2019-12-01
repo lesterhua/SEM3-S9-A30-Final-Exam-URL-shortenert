@@ -69,6 +69,15 @@ app.post('/', urlValidator, (req, res) => {
   }
 })
 
+app.get('/:url', (req, res) => {
+  const url = req.params.url
+  Url.findOne({ url }).then(site => {
+    if (site) {
+      res.redirect(site.link)
+    }
+  })
+})
+
 app.listen(port, () => {
   console.log(`app is running on:http://localhost:${port}`)
 })
