@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
-app.post('/', urlValidator, (req, res) => {
+app.post('/', urlValidator, async (req, res) => {
   console.log(req.body.link)
   const link = req.body.link
   const errors = validationResult(req)
@@ -49,23 +49,23 @@ app.post('/', urlValidator, (req, res) => {
     if (errMsg) {
       return res.render('index', { errMsg })
     }
-  } else {
-    Url.findOne({ link }).then((site) => {
-      if (site) {
-        res.render('index', { site })
-      } else {
-        let randomNumber = generateRandomNumber()
-        const newUrl = new Url({
-          link: link,
-          url: randomNumber
-        })
-        newUrl.save().then((site) => {
-          res.render('index', { site })
-        }).catch(err => {
-          console.log(err)
-        })
+  }
+  else {
+    let link = req.body.link
+    let site = await Url.findOne({ link })
+    if (!site) {
+      let url = generateRandomNumber()
+      site = await Url.create({ link, url })
+      console.log(url)
+    } else {
+      let randomNumber = generateRandomNumber()
+      let url = await Url.findOne({ randomNumber })
+      if (!url) {
+        let url = randomNumber
+        site = await Url.create({ link, url })
       }
-    })
+    }
+    return res.render('index', { site })
   }
 })
 
