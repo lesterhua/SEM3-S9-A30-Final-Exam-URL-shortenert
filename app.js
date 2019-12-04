@@ -1,6 +1,11 @@
 const express = require('express')
 const app = express()
 
+let linkUrl = 'https://mysterious-falls-40648.herokuapp.com'
+if (process.env.NODE_ENV !== 'production') {
+  linkUrl = 'localhost:3000'
+}
+
 const exphbs = require('express-handlebars')
 const bodyParse = require('body-parser')
 const mongoose = require('mongoose')
@@ -65,7 +70,7 @@ app.post('/', urlValidator, async (req, res) => {
         site = await Url.create({ link, url })
       }
     }
-    return res.render('index', { site })
+    return res.render('index', { site, linkUrl })
   }
 })
 
