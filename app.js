@@ -78,7 +78,7 @@ app.get('/:url', (req, res) => {
   })
 })
 
-app.listen(process.env.MONGODB_URI || port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`app is running on:http://localhost:${port}`)
 })
 
