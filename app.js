@@ -12,7 +12,7 @@ const { urlValidator } = require('./urlValidator')
 const port = 3000
 
 // 連線mongodb
-mongoose.connect('mongodb://127.0.0.1/shortURL', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1/shortURL', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 
 const db = mongoose.connection
 
@@ -78,7 +78,7 @@ app.get('/:url', (req, res) => {
   })
 })
 
-app.listen(port, () => {
+app.listen(process.env.MONGODB_URI || port, () => {
   console.log(`app is running on:http://localhost:${port}`)
 })
 
