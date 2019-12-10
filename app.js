@@ -63,11 +63,14 @@ app.post('/', urlValidator, async (req, res) => {
       site = await Url.create({ link, url })
       console.log(url)
     } else {
-      let randomNumber = generateRandomNumber()
-      let url = await Url.findOne({ randomNumber })
-      if (!url) {
-        let url = randomNumber
-        site = await Url.create({ link, url })
+      while (true) {
+        let randomNumber = generateRandomNumber()
+        let url = await Url.findOne({ randomNumber })
+        if (!url) {
+          let url = randomNumber
+          site = await Url.create({ link, url })
+          break
+        }
       }
     }
     return res.render('index', { site, linkUrl })
